@@ -1,3 +1,11 @@
+# Next.js Component-level data fetching with SSR support
+
+<img src="https://cdn-images-1.medium.com/max/1600/1*PiiAFhtiL_9ieh2d-vdFTQ.png">
+
+> This repo contains the source code for the medium article
+
+---
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
