@@ -1,7 +1,17 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
+import App, { AppContext, AppInitialProps, AppProps } from "next/app";
 
-function MyApp({ Component, pageProps }: AppProps) {
+import "../styles/globals.css";
+
+export default function MyApp({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />;
 }
-export default MyApp;
+
+MyApp.getInitialProps = async (appContext: AppContext) => {
+  const data: AppInitialProps = await App.getInitialProps(appContext);
+
+  const pageProps = {
+    ...data.pageProps,
+  };
+
+  return pageProps;
+};
