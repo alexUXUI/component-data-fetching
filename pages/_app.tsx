@@ -17,8 +17,8 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
   const sse = await initialRender(appContext, data);
 
   const pageProps = {
-    ...data.pageProps,
-    ...sse,
+    ...data,
+    sse,
   };
 
   return pageProps;

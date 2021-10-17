@@ -7,7 +7,7 @@ export const { ServerDataContext, resolveData } = createServerContext();
 
 function getOrCreate() {
   if (process.browser) {
-    window._initialDataContext = window.__NEXT_DATA__.props;
+    window._initialDataContext = window.__NEXT_DATA__.props.sse;
     return require("use-sse").createBroswerContext();
   }
   return ServerDataContext;
