@@ -9,7 +9,10 @@ function getOrCreate() {
   if (process.browser) {
     //decompress the SSR string
     // window._initialDataContext = window.__NEXT_DATA__.props.sse
+    console.time('decompress SSR')
     window._initialDataContext = compressPayload.decompress(window.__NEXT_DATA__.props.sse);
+    console.timeEnd('decompress SSR')
+
     return require("use-sse").createBroswerContext();
   }
   return ServerDataContext;
