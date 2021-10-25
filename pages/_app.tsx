@@ -1,4 +1,5 @@
 import App, { AppContext, AppInitialProps, AppProps } from "next/app";
+import * as compressPayload from 'compress-json';
 import { Context, initialRender } from "../context/sse.context";
 
 import "../styles/globals.css";
@@ -13,7 +14,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
 MyApp.getInitialProps = async (appContext: AppContext) => {
   const data: AppInitialProps = await App.getInitialProps(appContext);
-    const compressPayload = require('compress-json')
   const sse = await initialRender(appContext, data);
   const compressedSSEData = compressPayload.compress(sse.data)
   const b = JSON.stringify(sse.data).length * 2;
