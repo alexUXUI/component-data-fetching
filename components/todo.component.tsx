@@ -13,12 +13,9 @@ interface Todo {
 // it is avaialble to children.
 
 // page -> component bridge
-
 // this is for client
 
-
 // RULE OF THREE
-
 // 1: Data fetch
 export function dataFetcher(postId: number) {
   return fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`).then(
@@ -52,8 +49,7 @@ export const TodoMarkup = ({ todo, error }: any) => {
 };
 
 
-export const useTodos = (postId: number): {todo: Todo, error: Error} => {
-
+export const useTodos = (postId: number, dataFetcher: any): {todo: Todo, error: Error} => {
   const [todo, error] = useSSE((): Promise<Todo[]> => {
     return dataFetcher(postId)
   }, [postId]);
@@ -90,8 +86,8 @@ export const TodosContext = createContext<{
   error: undefined
 });
 
-export const TodosComponent = ({ todo: todoProp, error: errorProp, dataFetcher: any }: {todo: Todo, error: Error}) => {
-  const { todo: todoInternal, error: errorInternal } = useTodosContext(dataFetcher);
+export const TodosComponent = ({ todo: todoProp, error: errorProp }: {todo: Todo | undefined, error: Error | undefined}) => {
+  const { todo: todoInternal, error: errorInternal } = useTodosContext();
 
   if (!todoProp) {
     if (!todoInternal || !Object.keys(todoInternal)?.length) return <span>Loading...</span>;

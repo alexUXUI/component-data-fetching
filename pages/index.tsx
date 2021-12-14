@@ -1,11 +1,11 @@
 import Head from "next/head";
 import Image from "next/image";
 import { useMemo } from "react";
-import { SmartTodoComponent, useTodos, TodosContext } from "../components/todo.component";
+import { TodosComponent, useTodos, TodosContext, dataFetcher } from "../components/todo.component";
 import styles from "../styles/Home.module.css";
 
 function TodosProvider({ children, postId }: any) {
-  const { todo, error } = useTodos(postId);
+  const { todo, error } = useTodos(postId, dataFetcher);
   const value = {todo, error};
   return <TodosContext.Provider value={value}>{children}</TodosContext.Provider>;
 }
@@ -24,7 +24,10 @@ export default function Home() {
         </Head>
         <main>
           { /*  no props here! */ }
-          <SmartTodoComponent />
+          <TodosComponent 
+            error={undefined} 
+            todo={undefined} 
+          />
         </main>
         <footer className={styles.footer}>
           <a
