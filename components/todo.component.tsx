@@ -1,36 +1,81 @@
 import { useSSE } from "use-sse";
-
+import { createContext, useState, useEffect, useMemo, useContext } from 'react'
 interface Todo {
   userId: number;
   id: number;
   title: string;
-  completed: boolean;
+  body: string;
 }
 
-export const TodoComponent = () => {
-  const [todos, error] = useSSE((): Promise<Todo[]> => {
-    return fetch("https://jsonplaceholder.typicode.com/todos").then(
+// get a Post By ID: https://jsonplaceholder.typicode.com/posts/1
+
+// When the Page loads, we want to set the product ID in context, so that
+// it is avaialble to children.
+
+// page -> component bridge
+
+// this is for client
+export const useTodos = (postId: number): {todo: Todo, error: Error} => {
+
+  const [todo, error] = useSSE((): Promise<Todo[]> => {
+    return fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`).then(
       (response: Response) => response.json()
     );
-  }, []);
+  }, [postId]);
 
-  if (error) return <div>{error.message}</div>;
+  return {
+    todo,
+    error
+  };
+};
 
-  if (!todos?.length) return <span>Loading...</span>;
+// this is a helper component that will get the context from the Provider. It's like <Context.Consumer>
+// this will help any child of the <TodosProvider /> get access to the todos data from the context API and not from props.
+export function useTodosContext() {
+  const todosContext = useContext(TodosContext);
+  if (!todosContext) {
+    // if the call to get the contet from the provider doesn't work its because there is not context prodiver to consume
+    // https://reactjs.org/docs/hooks-reference.html#usecontext
+    throw new Error(`useTodosContext must be used within a Todos Provider!`);
+  }
+  return todosContext;
+}
 
-  return (
-    <section>
-      <h1>Todo List</h1>
-      <ul>
-        {todos.map((todo: Todo) => {
-          return (
-            <li key={todo.id}>
-              <h2>{todo.title}</h2>
-              <p>{todo.completed ? "Completed" : "Not Completed"}</p>
+// Todos Context
+export const TodosContext = createContext<{
+  todo: Todo,
+  error: Error | undefined
+}>({
+  todo: {
+    userId: 0,
+    id: 0,
+    title: 'default',
+    body: 'some defualt text'
+  }, 
+  error: undefined
+});
+
+export const TodoComponent = () => {
+  const { todo, error } = useTodosContext();
+
+  if (!todo || !Object.keys(todo)?.length) return <span>Loading...</span>;
+
+  if (error) return <span>Error: {error.message}</span>;
+
+  if (todo?.id) {
+    const {id, title, body} = todo;
+    return (
+        <section>
+          <h1>Todo List</h1>
+          <ul>
+            <li key={id}>
+              <h2>{title}</h2>
+              <p>{body ? body : "Not body"}</p>
             </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
+          </ul>
+        </section>
+    );
+  }
+
+  return null;
 };
