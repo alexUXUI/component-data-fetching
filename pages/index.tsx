@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import { useMemo } from "react";
-import { TodoComponent, useTodos, TodosContext } from "../components/todo.component";
+import { SmartTodoComponent, useTodos, TodosContext } from "../components/todo.component";
 import styles from "../styles/Home.module.css";
 
 function TodosProvider({ children, postId }: any) {
@@ -12,7 +12,6 @@ function TodosProvider({ children, postId }: any) {
 
 export default function Home() {
   // PDP page knows what the product id is based on the url
-
   // We pass the product id to the Page -> Component Content bridge
 
   return (
@@ -24,7 +23,8 @@ export default function Home() {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <main>
-          <TodoComponent />
+          { /*  no props here! */ }
+          <SmartTodoComponent />
         </main>
         <footer className={styles.footer}>
           <a

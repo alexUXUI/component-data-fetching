@@ -15,12 +15,47 @@ interface Todo {
 // page -> component bridge
 
 // this is for client
+
+
+// RULE OF THREE
+
+// 1: Data fetch
+export function dataFetcher(postId: number) {
+  return fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`).then(
+      (response: Response) => response.json()
+    );
+}
+
+// 2: Dumb Component - takes the data, does not request it
+export const TodoMarkup = ({ todo, error }: any) => {
+
+  if (!todo || !Object.keys(todo)?.length) return <span>Loading...</span>;
+
+  if (error) return <span>Error: {error.message}</span>;
+
+  if (todo?.id) {
+    const {id, title, body} = todo;
+    return (
+        <section>
+          <h1>Todo List</h1>
+          <ul>
+            <li key={id}>
+              <h2>{title}</h2>
+              <p>{body ? body : "Not body"}</p>
+            </li>
+          </ul>
+        </section>
+    );
+  }
+
+  return null;
+};
+
+
 export const useTodos = (postId: number): {todo: Todo, error: Error} => {
 
   const [todo, error] = useSSE((): Promise<Todo[]> => {
-    return fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`).then(
-      (response: Response) => response.json()
-    );
+    return dataFetcher(postId)
   }, [postId]);
 
   return {
@@ -55,27 +90,16 @@ export const TodosContext = createContext<{
   error: undefined
 });
 
-export const TodoComponent = () => {
-  const { todo, error } = useTodosContext();
+export const TodosComponent = ({ todo: todoProp, error: errorProp, dataFetcher: any }: {todo: Todo, error: Error}) => {
+  const { todo: todoInternal, error: errorInternal } = useTodosContext(dataFetcher);
 
-  if (!todo || !Object.keys(todo)?.length) return <span>Loading...</span>;
+  if (!todoProp) {
+    if (!todoInternal || !Object.keys(todoInternal)?.length) return <span>Loading...</span>;
+    if (errorInternal) return <span>Error: {errorInternal.message}</span>;
+    if (todoInternal) {
+      <TodoMarkup todo={todoInternal} error={errorInternal} />
+    }
+  } 
 
-  if (error) return <span>Error: {error.message}</span>;
-
-  if (todo?.id) {
-    const {id, title, body} = todo;
-    return (
-        <section>
-          <h1>Todo List</h1>
-          <ul>
-            <li key={id}>
-              <h2>{title}</h2>
-              <p>{body ? body : "Not body"}</p>
-            </li>
-          </ul>
-        </section>
-    );
-  }
-
-  return null;
+  return <TodoMarkup todo={todoProp} error={errorProp} />;
 };
